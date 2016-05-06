@@ -59,6 +59,8 @@ func (conn *Conn) subscribes() {
 				fmt.Println("subscribe error:" + err.Error())
 			}
 
+			go conn.Route.PerformMessage(msg)
+
 			fmt.Println("receive from:"+msg.Channel+" message:"+msg.Payload+" pattern:"+msg.Pattern)
 		}
 	} else {
