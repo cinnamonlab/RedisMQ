@@ -1,12 +1,12 @@
 package controller
 
-import "github.com/cinnamonlab/gormq"
+import "github.com/cinnamonlab/gormq/gormp"
 
 type TestController struct {
-	Routes map[string]gormq.QueueFunc
+	Functions map[string]gormq.QueueFunc
 }
 
-func NewInstance() *gormq.QController{
+func NewInstance() gormq.QController{
 	instance := &TestController{}
 
 	instance.initRoutes()
@@ -15,13 +15,15 @@ func NewInstance() *gormq.QController{
 }
 
 func (controller *TestController) Routes() map[string]gormq.QueueFunc  {
-	return  controller.Routes
+	return  controller.Functions
 }
 
 func (controller *TestController) initRoutes() {
 
-	controller.Routes = map[string]gormq.QueueFunc {
-		"cache/insert/user":controller.firstController,
+	controller.Functions = make(map[string]gormq.QueueFunc)
+
+	controller.Functions = map[string]gormq.QueueFunc {
+		"cache/*/insert":controller.firstController,
 	}
 }
 

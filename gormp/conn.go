@@ -7,11 +7,14 @@ import (
 
 type Conn struct {
 	Client *redis.Client
-	Route QRoute
+	Route *QRoute
 }
 
-func NewConn() *Conn  {
-	return &Conn{}
+func NewConn(route *QRoute) *Conn  {
+	return &Conn{
+		Client:nil,
+		Route:route,
+	}
 }
 
 func (conn *Conn) Start(host string, port string) error {
@@ -35,18 +38,31 @@ func (conn *Conn) Start(host string, port string) error {
 }
 
 func (conn *Conn) subscribes() {
-	pubsub, err := conn.Client.PSubscribe("/cache/*/insert")
 
-	if err != nil {
-		fmt.Println("subscribe error")
+	patterns := make([]string,0)
+
+	for pattern, _ := range conn.Route.Functions {
+		patterns = append(patterns,pattern)
 	}
-	for {
-		msg, err := pubsub.ReceiveMessage()
-		if err != nil {
-			fmt.Println("subscribe error:" + err.Error())
-		}
 
-		fmt.Println("receive from:"+msg.Channel+" message:"+msg.Payload+" pattern:"+msg.Pattern)
+	if len(patterns)>0 {
+		fmt.Println(patterns)
+
+		pubsub, err := conn.Client.PSubscribe(patterns...)
+
+		if err != nil {
+			fmt.Println("subscribe error")
+		}
+		for {
+			msg, err := pubsub.ReceiveMessage()
+			if err != nil {
+				fmt.Println("subscribe error:" + err.Error())
+			}
+
+			fmt.Println("receive from:"+msg.Channel+" message:"+msg.Payload+" pattern:"+msg.Pattern)
+		}
+	} else {
+		fmt.Println("chanel patterns is empty!")
 	}
 }
 
