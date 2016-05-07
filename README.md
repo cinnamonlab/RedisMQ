@@ -1,4 +1,4 @@
-# gormq
+# RedisMQ
 Message queue broker based on redis, support route also.
 
 # One queue instance will be create from:
