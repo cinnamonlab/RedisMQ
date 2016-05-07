@@ -8,7 +8,7 @@ Message queue broker based on redis, support route also.
 
 # To define controller and route, follow:
 - Init route(s) for controller
-```
+```go
 func (controller *TestController) initRoutes() {
 
 	controller.Functions = make(map[string]gormq.QueueFunc)
