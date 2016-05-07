@@ -20,13 +20,13 @@ func (controller *TestController) initRoutes() {
 ```
 - Create controller function for each route, like this:
 
-```
+```go
 func (controller *TestController) firstController(input string)  {
 	fmt.Println("Message payload:"+input)
 }
 ```
 - Init new connection with all routes defined before start connection.
-```
+```go
   route := gormq.NewQRoute()
 
 	testController := controller.NewInstance()
@@ -41,7 +41,7 @@ func (controller *TestController) firstController(input string)  {
 - When new connection is started, this client is automatic subscribe to all channels with pattern is route paths and start workerPool also.
 - Foreach new message received from channels, it will add to workerpool to perform.
 
-```
+```go
 func (conn *Conn) subscribes() {
 
 	patterns := make([]string,0)
