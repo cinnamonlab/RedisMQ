@@ -38,7 +38,8 @@ func (controller *TestController) firstController(input string)  {
 	client.Start("127.0.0.1","6379")
 
 ```
-- When new connection is started, this client is automatic subscribe to all channels with pattern is route paths.
+- When new connection is started, this client is automatic subscribe to all channels with pattern is route paths and start workerPool also.
+- Foreach new message received from channels, it will add to workerpool to perform.
 
 ```
 func (conn *Conn) subscribes() {
@@ -56,16 +57,26 @@ func (conn *Conn) subscribes() {
 
 		if err != nil {
 			fmt.Println("subscribe error")
+			return 
 		}
+		
+		// start worker pool here
+		workerpool.Start(5)
+		
 		for {
 			msg, err := pubsub.ReceiveMessage()
 			if err != nil {
 				fmt.Println("subscribe error:" + err.Error())
+			} else {
+				task,err := conn.Route.GetPerformTask(msg)
+
+				if err != nil {
+					// not match, ignore this case
+				} else  {
+					workerpool.AddNewTask(task)
+				}
+				fmt.Println("receive from:" + msg.Channel + " message:" + msg.Payload + " pattern:" + msg.Pattern)
 			}
-
-			go conn.Route.PerformMessage(msg)
-
-			fmt.Println("receive from:"+msg.Channel+" message:"+msg.Payload+" pattern:"+msg.Pattern)
 		}
 	} else {
 		fmt.Println("chanel patterns is empty!")
