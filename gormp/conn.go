@@ -3,6 +3,7 @@ package gormq
 import (
 	"gopkg.in/redis.v3"
 	"fmt"
+	"github.com/cinnamonlab/WorkerPool"
 )
 
 type Conn struct {
@@ -39,13 +40,13 @@ func (conn *Conn) Start(host string, port string) error {
 
 func (conn *Conn) subscribes() {
 
-	patterns := make([]string,0)
+	patterns := make([]string, 0)
 
 	for pattern, _ := range conn.Route.Functions {
-		patterns = append(patterns,pattern)
+		patterns = append(patterns, pattern)
 	}
 
-	if len(patterns)>0 {
+	if len(patterns) > 0 {
 		fmt.Println(patterns)
 
 		pubsub, err := conn.Client.PSubscribe(patterns...)
@@ -53,15 +54,23 @@ func (conn *Conn) subscribes() {
 		if err != nil {
 			fmt.Println("subscribe error")
 		}
+		// start worker pool here
+		workerpool.Start(5)
+
 		for {
 			msg, err := pubsub.ReceiveMessage()
 			if err != nil {
 				fmt.Println("subscribe error:" + err.Error())
+			} else {
+				task,err := conn.Route.GetPerformTask(msg)
+
+				if err != nil {
+					// not match, ignore this case
+				} else  {
+					workerpool.AddNewTask(task)
+				}
+				fmt.Println("receive from:" + msg.Channel + " message:" + msg.Payload + " pattern:" + msg.Pattern)
 			}
-
-			go conn.Route.PerformMessage(msg)
-
-			fmt.Println("receive from:"+msg.Channel+" message:"+msg.Payload+" pattern:"+msg.Pattern)
 		}
 	} else {
 		fmt.Println("chanel patterns is empty!")

@@ -26,13 +26,15 @@ func (route *QRoute) AddRoutes(controller QController)  {
 	}
 }
 
-func (route *QRoute) PerformMessage(msg *redis.Message) error {
+func (route *QRoute) GetPerformTask(msg *redis.Message) (*QueueTask,error) {
 	// add to queue and run one by one
 	if function, ok := route.Functions[msg.Pattern]; ok {
-		function(msg.Payload)
-		return nil
+		return &QueueTask{
+			Function:function,
+			Param:msg.Payload,
+		},nil
 	} else {
-		return errors.New("pattern is not match")
+		return nil,errors.New("pattern is not match")
 	}
 }
 
