@@ -53,6 +53,7 @@ func (conn *Conn) subscribes() {
 
 		if err != nil {
 			fmt.Println("subscribe error")
+			return
 		}
 		// start worker pool here
 		workerpool.Start(5)
