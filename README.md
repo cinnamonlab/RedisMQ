@@ -1,6 +1,10 @@
 # RedisMQ
 Message queue broker based on redis, support route also.
 
+<br>
+
+<img src = "https://github.com/cinnamonlab/RedisMQ/blob/master/QueueServer.png"/>
+
 # One queue instance will be create from:
 - route pattern which is the same subscribe chanel pattern.
 - Controller for each event happen on each chanel (when receive new message....)
