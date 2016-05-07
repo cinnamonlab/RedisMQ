@@ -1,4 +1,4 @@
-package gormq
+package redismq
 
 import (
 	"gopkg.in/redis.v3"

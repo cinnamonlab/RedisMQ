@@ -1,4 +1,4 @@
-package gormq
+package redismq
 
 type QueueTask struct {
 	Function QueueFunc

@@ -1,12 +1,12 @@
 package controller
 
-import "github.com/cinnamonlab/gormq/gormp"
+import "github.com/cinnamonlab/RedisMQ"
 
 type TestController struct {
-	Functions map[string]gormq.QueueFunc
+	Functions map[string]redismq.QueueFunc
 }
 
-func NewInstance() gormq.QController{
+func NewInstance() redismq.QController{
 	instance := &TestController{}
 
 	instance.initRoutes()
@@ -14,15 +14,15 @@ func NewInstance() gormq.QController{
 	return instance
 }
 
-func (controller *TestController) Routes() map[string]gormq.QueueFunc  {
+func (controller *TestController) Routes() map[string]redismq.QueueFunc  {
 	return  controller.Functions
 }
 
 func (controller *TestController) initRoutes() {
 
-	controller.Functions = make(map[string]gormq.QueueFunc)
+	controller.Functions = make(map[string]redismq.QueueFunc)
 
-	controller.Functions = map[string]gormq.QueueFunc {
+	controller.Functions = map[string]redismq.QueueFunc {
 		"cache/*/insert":controller.firstController,
 	}
 }
